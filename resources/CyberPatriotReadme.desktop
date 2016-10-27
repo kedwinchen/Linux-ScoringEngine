@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=README
+Type=Application
+Exec=x-www-browser "file:///opt/ScoreEngine/ReadMe.html"
+Icon=/opt/ScoreEngine/tux.png
+StartupNotify=true

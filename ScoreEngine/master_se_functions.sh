@@ -13,8 +13,8 @@ return 0
 
 # Description: Checks the operating system.
 function set_os {
-	local SYSTEM="$(cat /proc/version |cut -d '(' -f4 |cut -d ')' -f1 |sed -s 's/[0123456789]/./g' |cut -d '.' -f1 |tr -d ' ')"
-	
+	export readonly SYSTEM="$(cat /proc/version |cut -d '(' -f4 |cut -d ')' -f1 |sed -s 's/[0123456789]/./g' |cut -d '.' -f1 |tr -d ' ' | cut -d '/' -f1 )"
+
 	case $SYSTEM in
 	"RedHat")
 		export readonly OS_TYPE="redhat"
@@ -46,7 +46,7 @@ if [ $finalscore -gt $oldscore ]; then
 else
 	if [ $finalscore -lt $oldscore ]; then
 		notify-send "CyberPatriot" "You lost points!"
-		play -q ${SEDIRECTORY}/alarm.wav &	
+		play -q ${SEDIRECTORY}/alarm.wav &
 	else
 		#if [ $finalscore -eq $oldscore ]; then
 		notify-send "CyberPatriot" "Your total points didn't change"
@@ -58,14 +58,14 @@ echo "$finalscore" > ${SEDIRECTORY}/oldscore
 
 function gain_points {
 local readonly value=$1
-	
+
 ((count++))
 ((points+=value))
 }
 
 function penalize {
 local readonly value=$1
-	
+
 ((penalties++))
 ((deduction+=value))
 }
@@ -106,7 +106,7 @@ function finalize_score {
 finalscore=$(($points - $deduction))
 }
 
-# Description: Replaces values in the Scoring Report file. 
+# Description: Replaces values in the Scoring Report file.
 function replace_values {
 sed -i -e "s/NULLTITLE/$TITLE/g" ${OUTPUT}
 sed -i -e "s/NULLTIME/$TIME/g" ${OUTPUT}
@@ -133,7 +133,7 @@ sed -i -e "s/NULLMAX/$max/g" ${OUTPUT}
 
 #--# Gain Points #--#
 
-## 
+##
 # The function checks for a single line in the file specified
 # Arguments: Description (String); Point value (Integer); File (String); Line to find (String)
 ##
@@ -176,7 +176,7 @@ function is_file_removed {
 local readonly description="$1"
 local readonly value="$2"
 local readonly query="$3"
-	
+
 if [[ ! -e "${query}" ]]; then
 	success "${description}" $value
 fi
@@ -247,7 +247,7 @@ fi
 raise_max $value
 }
 
-## 
+##
 # The function checks if the setting for the key exists
 # Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Setting of key (String)
 ##
@@ -261,10 +261,10 @@ local readonly setting="$5"
 if grep -wisE -- "${key}" "${query}"|grep -wisEq -- "${setting}"; then
 	success "${description}" $value
 fi
-raise_max $value 
+raise_max $value
 }
 
-## 
+##
 # The function checks if multiple values exist on the same line (the function does not check if the same line exists twice)
 # Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Settings of key (ARRAY of String)
 ##
@@ -276,7 +276,7 @@ local readonly key="$4"
 local readonly setting="$5"
 local check=0
 
-for multi_key in ${setting[@]}; do 
+for multi_key in ${setting[@]}; do
 	grep -wisE -- "${key}" "${query}"|grep -wisEq -- "${multi_key}"
 	if [ $? -eq 0 ]; then
 		((check++))
@@ -339,4 +339,3 @@ for multi_key in ${words[@]}; do
 	fi
 done
 }
-

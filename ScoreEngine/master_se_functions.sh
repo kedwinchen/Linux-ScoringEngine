@@ -251,7 +251,7 @@ raise_max $value
 # The function checks if the setting for the key exists
 # Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Setting of key (String)
 ##
-function key_pair_exists {
+function key_pair_set {
 local readonly description="$1"
 local readonly value="$2"
 local readonly query="$3"
@@ -265,10 +265,28 @@ raise_max $value
 }
 
 ##
+# The function checks if the setting for the key does not exist
+# Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Setting of key (String)
+##
+function key_pair_unset {
+local readonly description="$1"
+local readonly value="$2"
+local readonly query="$3"
+local readonly key="$4"
+local readonly setting="$5"
+
+grep -wisE -- "${key}" "${query}"|grep -wisEq -- "${setting}"
+if [[ $? -ne 0 ]]; then
+	success "${description}" $value
+fi
+raise_max $value
+}
+
+##
 # The function checks if multiple values exist on the same line (the function does not check if the same line exists twice)
 # Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Settings of key (ARRAY of String)
 ##
-function multiple_keys {
+function multiple_keys_set {
 local readonly description="$1"
 local readonly value="$2"
 local readonly query="$3"
@@ -289,6 +307,30 @@ fi
 raise_max $value
 }
 
+##
+# The function checks if multiple values do not exist on the same line (the function does not check if the same line exists twice)
+# Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Settings of key (ARRAY of String)
+##
+function multiple_keys_unset {
+local readonly description="$1"
+local readonly value="$2"
+local readonly query="$3"
+local readonly key="$4"
+local readonly setting="$5"
+local check=0
+
+for multi_key in ${setting[@]}; do
+	grep -wisE -- "${key}" "${query}"|grep -wisEq -- "${multi_key}"
+	if [ $? -eq 0 ]; then
+		((check++))
+	fi
+done
+
+if [[ $check -eq 0 ]]; then
+	success "${description}" $value
+fi
+raise_max $value
+}
 
 #--# Lose Points #--#
 

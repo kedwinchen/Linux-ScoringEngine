@@ -28,7 +28,7 @@ export is_verbose=0
 ## End GLOBAL Variables ##
 
 ##### INTEGRITY FUNCTION #####
-readonly CHECKSUM_SHA512="123806aa17da12265f6ccacb65d2dda43630e2f63d164778bb81e519c93b623b1f7ec0830a650bdb4498388b92535f87534a11cbebbe1a147e8f1537bbf704b7"
+readonly CHECKSUM_SHA512="a9df6ddb7b5fcf0a97348476e83c711692400fff7fea4627f8cfe3dd44838146fcd62232cd6427404cb88c658e44c3ae46b27affe8b37c4b63a84710188696aa"
 
 function check_integrity {
 if [[ $(sha512sum ${SEFUNCTIONS}|cut -d ' ' -f1) = ${CHECKSUM_SHA512} ]]; then

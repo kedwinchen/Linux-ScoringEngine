@@ -2,5 +2,5 @@
 Name=CyberPatriot Scoring Report
 Type=Application
 Exec=x-www-browser "file:///opt/ScoreEngine/ScoreReport.html"
-Icon=/opt/ScoreEngine/CyberPatriotIcon.png
+Icon=/opt/ScoreEngine/tux.png
 StartupNotify=true

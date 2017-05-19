@@ -2,6 +2,7 @@
 # -- DO NOT MODIFY UNLESS YOU KNOW WHAT YOU ARE DOING -- #
 # -- Modifying this file WILL cause your scoring engine to break -- #
 
+# Description: Checks if the user running the script is root
 function check_root {
 if [[ $USER != "root" ]]; then
 	echo "FATAL ERROR: You must be root to run this script. Execution aborted"
@@ -10,6 +11,33 @@ fi
 return 0
 }
 
+# Description: Checks the operating system.
+function set_os {
+	export readonly SYSTEM="$(cat /proc/version |cut -d '(' -f4 |cut -d ')' -f1 |sed -s 's/[0123456789]/./g' |cut -d '.' -f1 |tr -d ' ' | cut -d '/' -f1 )"
+
+	case $SYSTEM in
+	"RedHat")
+		export readonly OS_TYPE="redhat"
+		export PKGQUERY="rpm -q "
+		export ADMIN_GRP="wheel"
+		;;
+	"Debian"|"Ubuntu")
+		export readonly OS_TYPE="debian"
+		export PKGQUERY="dpkg -s "
+		export ADMIN_GRP="sudo"
+		;;
+	*)
+		echo "FATAL ERROR: Could not determine the operating system type. This is due to one of the following: "
+		echo "1. The SYSTEM variable (current value ${SYSTEM}) (in ${SEDIRECTORY}/master_se_functions.sh is not set correctly."
+		echo "2. Operating system not supported or recognized. The system uses /proc/version to determine the OS_TYPE"
+		echo "-----"
+		echo "Execution aborted"
+		return 1
+		;;
+	esac
+}
+
+# Description: Sends the user a message through the notify command. Also plays appropriate file using the play command from sox package.
 function notify {
 oldscore=$(cat ${SEDIRECTORY}/oldscore)
 if [ $finalscore -gt $oldscore ]; then
@@ -18,7 +46,7 @@ if [ $finalscore -gt $oldscore ]; then
 else
 	if [ $finalscore -lt $oldscore ]; then
 		notify-send "CyberPatriot" "You lost points!"
-		play -q ${SEDIRECTORY}/alarm.wav &	
+		play -q ${SEDIRECTORY}/alarm.wav &
 	else
 		#if [ $finalscore -eq $oldscore ]; then
 		notify-send "CyberPatriot" "Your total points didn't change"
@@ -30,14 +58,14 @@ echo "$finalscore" > ${SEDIRECTORY}/oldscore
 
 function gain_points {
 local readonly value=$1
-	
+
 ((count++))
 ((points+=value))
 }
 
 function penalize {
 local readonly value=$1
-	
+
 ((penalties++))
 ((deduction+=value))
 }
@@ -73,6 +101,12 @@ echo "<br>${description} -$value points" >> ${OUTPUT}
 penalize $value
 }
 
+# Description: Calculates the score based on score and deductions.
+function finalize_score {
+finalscore=$(($points - $deduction))
+}
+
+# Description: Replaces values in the Scoring Report file.
 function replace_values {
 sed -i -e "s/NULLTITLE/$TITLE/g" ${OUTPUT}
 sed -i -e "s/NULLTIME/$TIME/g" ${OUTPUT}
@@ -89,9 +123,6 @@ sed -i -e "s/NULLCOUNT/$count/g" ${OUTPUT}
 sed -i -e "s/NULLMAX/$max/g" ${OUTPUT}
 }
 
-function finalize_score {
-finalscore=$(($points - $deduction))
-}
 ### Scoring Functions
 
 ## General Notes:
@@ -102,7 +133,7 @@ finalscore=$(($points - $deduction))
 
 #--# Gain Points #--#
 
-## 
+##
 # The function checks for a single line in the file specified
 # Arguments: Description (String); Point value (Integer); File (String); Line to find (String)
 ##
@@ -120,6 +151,23 @@ raise_max $value
 }
 
 ##
+# The function checks that the specified line is not in the specified file
+# Arguments: Description (String); Point value (Integer); File (String); Line to not find (String)
+##
+function single_line_not_in_file {
+
+local readonly description="$1"
+local readonly value="$2"
+local readonly query="$3"
+local readonly checkstr="$4"
+
+if ! grep -wisEq -- "${checkstr}" "${query}"; then
+        success "${description}" $value
+fi
+raise_max $value
+}
+
+##
 # The function checks if a specified file exists
 # Arguments: Description (String); Point value (Integer); File (String)
 ##
@@ -128,7 +176,7 @@ function is_file_removed {
 local readonly description="$1"
 local readonly value="$2"
 local readonly query="$3"
-	
+
 if [[ ! -e "${query}" ]]; then
 	success "${description}" $value
 fi
@@ -145,7 +193,7 @@ local readonly description="$1"
 local readonly value="$2"
 local readonly query="$3"
 
-if dpkg -s ${query} &> /dev/null; then
+if ${PKGQUERY} ${query} &> /dev/null; then
 	success "${description}" $value
 fi
 raise_max $value
@@ -161,7 +209,8 @@ local readonly description="$1"
 local readonly value="$2"
 local readonly query="$3"
 
-if ! dpkg -s ${query} &> /dev/null; then
+${PKGQUERY} ${query} &> /dev/null
+if [[ $? -ne 0 ]]; then
 	success "${description}" $value
 fi
 raise_max $value
@@ -199,11 +248,11 @@ fi
 raise_max $value
 }
 
-## 
+##
 # The function checks if the setting for the key exists
 # Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Setting of key (String)
 ##
-function key_pair_exists {
+function key_pair_set {
 local readonly description="$1"
 local readonly value="$2"
 local readonly query="$3"
@@ -213,14 +262,32 @@ local readonly setting="$5"
 if grep -wisE -- "${key}" "${query}"|grep -wisEq -- "${setting}"; then
 	success "${description}" $value
 fi
-raise_max $value 
+raise_max $value
 }
 
-## 
+##
+# The function checks if the setting for the key does not exist
+# Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Setting of key (String)
+##
+function key_pair_unset {
+local readonly description="$1"
+local readonly value="$2"
+local readonly query="$3"
+local readonly key="$4"
+local readonly setting="$5"
+
+grep -wisE -- "${key}" "${query}"|grep -wisEq -- "${setting}"
+if [[ $? -ne 0 ]]; then
+	success "${description}" $value
+fi
+raise_max $value
+}
+
+##
 # The function checks if multiple values exist on the same line (the function does not check if the same line exists twice)
 # Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Settings of key (ARRAY of String)
 ##
-function multiple_keys {
+function multiple_keys_set {
 local readonly description="$1"
 local readonly value="$2"
 local readonly query="$3"
@@ -228,7 +295,7 @@ local readonly key="$4"
 local readonly setting="$5"
 local check=0
 
-for multi_key in ${setting[@]}; do 
+for multi_key in ${setting[@]}; do
 	grep -wisE -- "${key}" "${query}"|grep -wisEq -- "${multi_key}"
 	if [ $? -eq 0 ]; then
 		((check++))
@@ -241,6 +308,30 @@ fi
 raise_max $value
 }
 
+##
+# The function checks if multiple values do not exist on the same line (the function does not check if the same line exists twice)
+# Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Settings of key (ARRAY of String)
+##
+function multiple_keys_unset {
+local readonly description="$1"
+local readonly value="$2"
+local readonly query="$3"
+local readonly key="$4"
+local readonly setting="$5"
+local check=0
+
+for multi_key in ${setting[@]}; do
+	grep -wisE -- "${key}" "${query}"|grep -wisEq -- "${multi_key}"
+	if [ $? -eq 0 ]; then
+		((check++))
+	fi
+done
+
+if [[ $check -eq 0 ]]; then
+	success "${description}" $value
+fi
+raise_max $value
+}
 
 #--# Lose Points #--#
 
@@ -251,14 +342,19 @@ raise_max $value
 function check_authorized_users {
 local readonly value="$1"
 local readonly query="/etc/passwd"
-local readonly words="$2"
+
+shift 1
+
+IFS='
+'
+
+local readonly words=($(printf "%s\n" "$@"))
 local readonly keys=${#words[@]}
-local check=0
 
 for find_this in ${words[@]}; do
-	grep -wisEq -- "${find_this}" "${query}"
-	if [[ $? -ne 0 ]]; then
-		fail "Authorized user $find_this deleted" $value
+	grep -wisEq -- "${find_this}" ${query}
+	if [ $? -ne 0 ]; then
+		fail "Authorized user $find_this has been deleted" $value
 	fi
 done
 }
@@ -267,23 +363,22 @@ done
 # The function checks if authorized admins have sudo privileges
 # Arguments: Point value (Integer); Admins (ARRAY of Strings)
 ##
-function check_authorized_sudoers {
+function check_authorized_admins {
 local readonly value="$1"
-local readonly query="/etc/shadow"
-local readonly key="sudo:27:"
-local readonly setting="$2"
-local check=0
+local readonly query="/etc/group"
 
-for multi_key in ${setting[@]}; do
-	grep -wisE -- "${key}" "${query}"|grep -wisEq "${multi_key}"
+shift 1
+
+IFS='
+'
+
+local readonly words=($(printf "%s\n" "$@"))
+local readonly keys=${#words[@]}
+
+for multi_key in ${words[@]}; do
+	grep -wisE -- "${ADMIN_GRP}" "${query}"|grep -wisEq -- "${multi_key}"
 	if [[ $? -ne 0 ]]; then
-		fail "Authorized user $find_this does not have 'sudo' privileges" $value
+		fail "Authorized administrator $find_this does not have administrator privileges!" $value
 	fi
 done
-
-if [[ $check -eq $keys ]]; then
-	success "${description}" $value
-fi
-raise_max $value
 }
-

@@ -1,6 +1,49 @@
+# -- DO NOT MODIFY THIS FILE UNLESS YOU KNOW WHAT YOU ARE DOING -- #
+# -- MODIFYING THIS FILE WILL CAUSE THE SCORING ENGINE TO BREAK -- #
+
+function show_license {
+echo "LICENSE FOR LINUX-SCORINGENGINE
+
+Copyright (c) 2017 Kedwin Chen
+All rights reserved.
+
+This license governs use of the accompanying software.
+If you use the software, you accept this license.
+If you do not accept the license, do not use the software.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+* The copyright holder has explicitly granted permission to redistribute the
+  software in source and/or binary form to a pre-determined entity.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+FAILURE TO MEET THE REQUIREMENTS OF THIS LICENSE WILL RESULT IN IMMEDIATE
+REVOCATION OF THE RIGHTS GRANTED BY THE LICENSE."
+}
+
 ##### CONSTANT FUNCTIONS  #####
-# -- DO NOT MODIFY UNLESS YOU KNOW WHAT YOU ARE DOING -- #
-# -- Modifying this file WILL cause your scoring engine to break -- #
 
 # Description: Checks if the user running the script is root
 function check_root {
@@ -86,6 +129,7 @@ if [[ $is_verbose -eq 1 ]]; then
 fi
 
 echo "<br>${description} - $value points" >> ${OUTPUT}
+echo "${description};$value;" >> ${CSV}
 gain_points $value
 }
 
@@ -98,6 +142,7 @@ if [[ $is_verbose -eq 1 ]]; then
 fi
 
 echo "<br>${description} -$value points" >> ${OUTPUT}
+echo "${description};$value;" >> ${CSV}
 penalize $value
 }
 
@@ -251,7 +296,7 @@ raise_max $value
 # The function checks if the setting for the key exists
 # Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Setting of key (String)
 ##
-function key_pair_exists {
+function key_pair_set {
 local readonly description="$1"
 local readonly value="$2"
 local readonly query="$3"
@@ -265,10 +310,28 @@ raise_max $value
 }
 
 ##
+# The function checks if the setting for the key does not exist
+# Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Setting of key (String)
+##
+function key_pair_unset {
+local readonly description="$1"
+local readonly value="$2"
+local readonly query="$3"
+local readonly key="$4"
+local readonly setting="$5"
+
+grep -wisE -- "${key}" "${query}"|grep -wisEq -- "${setting}"
+if [[ $? -ne 0 ]]; then
+	success "${description}" $value
+fi
+raise_max $value
+}
+
+##
 # The function checks if multiple values exist on the same line (the function does not check if the same line exists twice)
 # Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Settings of key (ARRAY of String)
 ##
-function multiple_keys {
+function multiple_keys_set {
 local readonly description="$1"
 local readonly value="$2"
 local readonly query="$3"
@@ -289,6 +352,30 @@ fi
 raise_max $value
 }
 
+##
+# The function checks if multiple values do not exist on the same line (the function does not check if the same line exists twice)
+# Arguments: Description (String); Point value (Integer); File (String); Key to find (String); Settings of key (ARRAY of String)
+##
+function multiple_keys_unset {
+local readonly description="$1"
+local readonly value="$2"
+local readonly query="$3"
+local readonly key="$4"
+local readonly setting="$5"
+local check=0
+
+for multi_key in ${setting[@]}; do
+	grep -wisE -- "${key}" "${query}"|grep -wisEq -- "${multi_key}"
+	if [ $? -eq 0 ]; then
+		((check++))
+	fi
+done
+
+if [[ $check -eq 0 ]]; then
+	success "${description}" $value
+fi
+raise_max $value
+}
 
 #--# Lose Points #--#
 

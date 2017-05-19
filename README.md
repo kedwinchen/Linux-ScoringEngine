@@ -12,29 +12,16 @@ These can be installed through your package manager (e.g. `apt-get`, `yum`)
 - `shc` (generic shell compiler)
     - [You can download shc from its GitHub page if your package manager cannot find it](https://github.com/neurobin/shc)
 
-### The `se_functions.sh` files
-When writing your code, sourcing the appropriate `se_functions.sh` will hopefully make the image creation easier.
-- `debian_se_functions.sh` should cover the following flavours: 
-    - Debian
-    - Ubuntu
-    - Linux Mint
-    - Other distros/flavours that use the DPKG package manager.
-- `rhel_se_functions.sh` should cover the following flavours:
-    - Red Hat
-    - CentOS
-    - Fedora
-    - Other distros/flavours that use the RPM package manager.
-- `master_se_functions.sh` should try to automagically detect which type of operating system (Debian/RedHat) you are using
-    - Some things to take note of:
-        - This will eventually replace the separate `debian_se_functions.sh` and `rhel_se_functions.sh` files
-        - This is currently the default `se_functions.sh` file the `ScoringEngine.sh` file looks towards
-        - This is still a work in progress, bugs are to be expected (please let me know if you find any!)
-    - Will not work with some versions of Linux Mint because of the way the script determines the system type (it looks at /proc/version)
+### The `master_se_functions.sh` file
+When writing your code, sourcing `master_se_functions.sh` will (hopefully) make the image creation easier.
+- `master_se_functions.sh` should try to automagically detect which type of operating system (e.g., Debian, Red Hat) you are using
+    - This is still a work in progress, bugs are to be expected (please let me know if you find any!)
+    - May not work with some distributions of Linux because of the way the script determines the system type (it looks at `/proc/version`)
 
 ### Custom scoring functions
-The `se_functions.sh` files contains many functions pre-coded; if you want custom functions, you have 2 choices:
+The `master_se_functions.sh` file contains many functions pre-coded; if you want custom functions, you have 2 choices:
 
-1. Put the functions in `se_functions.sh` (Note: you'll need to update the SHA512 hash in the `ScoringEngine.sh` file to make sure it passes the integrity check)
+1. Put the functions in `master_se_functions.sh` (Note: you'll need to update the SHA512 hash in the `ScoringEngine.sh` file to make sure it passes the integrity check)
 2. Put the functions in `ScoringEngine.sh` (This is easier, in my opinion)
 
 ### Compiling the Scoring Engine
@@ -43,22 +30,22 @@ This section is for if you want to protect/hide the contents of the `ScoringEngi
 0. `dos2unix` all of the `.sh` files you modified (e.g., `master_se_functions.sh` ; `ScoringEngine.sh`)
     - You MUST do this if you wrote the script on Windows and did not convert to Unix format (do this if you are unsure of what this means)
 1. Download and install the `shc` package
-2. Compile the `ScoringEngine.sh` file using `shc -Urf ScoringEngine.sh` (NOTE: The -U option may not always be available). You can also use other options the `shc` command offers 
-3. This will generate two files: `ScoringEngine.sh.x`, and `ScoringEngine.sh.x.c`. If you did not use the `-U` option, remove the `ScoringEngine.sh.x` file, as its code execution can be caught more simply than if you compiled the `ScoringEngine.sh.x.c`.
+2. Compile the `ScoringEngine.sh` file using `shc -Urf ScoringEngine.sh` (NOTE: The -U option may not always be available). You can also use other options the `shc` command offers
+3. This will generate two files: `ScoringEngine.sh.x`, and `ScoringEngine.sh.x.c`. If you did not use the `-U` option, remove the `ScoringEngine.sh.x` file, as its code execution can be caught/traced more simply than if you compiled the `ScoringEngine.sh.x.c`
     - The `ScoringEngine.sh.x` file is an executable binary of the script
     - The `ScoringEngine.sh.x.c` file is C code generated from the script. It's not very human-readable. **KEEP THIS FILE!!!**
 4. To ensure that the code is more hidden, compile `ScoringEngine.sh.x.c` using `gcc` or other C compiler.
-    - The command may look something like this (Note: you might need root permissions to write into the /opt directory (and its subdirectories):
-    
+    - The command may look something like this (Note: you might need root permissions to write into the `/opt` directory (and its subdirectories):
+
     ```
     # gcc /opt/ScoreEngine/ScoringEngine.sh.x.c -o /opt/ScoreEngine/ScoringEngine
-    ``` 
+    ```
 5. Remove the following files if they exist in tge directory where your Scoring Engine is stored (***only do this if you are ABSOLUTELY sure that you a) are satisfied with your code or b) have a backup to edit in case something goes wrong, I recommend keeping these files until you are done testing your script***)
     - `ScoringEngine.sh`
     - `ScoringEngine.sh~` (this is a backup created by your system)
     - `ScoringEngine.sh.x` (you can ignore this if you use the `-U` option, for Untraceable.)
 6. Keeping the `ScoringEngine.sh.x.c` file will allow the Scoring Engine to be recompiled in the event that it is either corrupted or deleted.
-7. Make a file in /usr/local/bin/ called 'score' with the following contents:
+7. Make a file in `/usr/local/bin/` called `score` with the following contents:
 
     ```bash
     #!/bin/bash
@@ -78,14 +65,26 @@ This section is for if you want to protect/hide the contents of the `ScoringEngi
            exit 0
     fi
     ```
-    
-8. ***OPTIONAL:*** Make a file in /etc/sudoers.d/ called 'ScoringEngine' with the following contents:
-    
+
+8. ***OPTIONAL:*** Make a file in `/etc/sudoers.d/` called `ScoringEngine` with the following contents:
+
     ```
     ALL ALL=NOPASSWD: /usr/local/bin/score
     ```
-    
+
     Save the file. Then run `# chmod 755 /usr/local/bin/score`. If you have coded everything right, then your competitors should be able to update their score using `sudo score` in the terminal without password. ***This step is necessary if you want to use the `.desktop` files (in Resources folder).***
+9. Make the critical files immutable. This prevents them from being deleted.
+ To do so, please use the following command:
+ ```bash
+ # chattr +i <filename>
+ ```
+ The files that will need this are:
+ ```
+ /opt/ScoreEngine/ScoringEngine.sh.x.c
+ /opt/ScoreEngine/master_se_functions.sh
+ /etc/sudoers.d/ScoringEngine
+ /usr/local/bin/score
+ ```
 
 ### The `.desktop` files
 These files are found in the "resources" folder. (See the exampleSE)
@@ -107,12 +106,16 @@ These files are found in the "resources" folder. (See the exampleSE)
 
 ### Miscellaneous
 #### Editors
-- Microsoft Word to make and edit the ReadMe. Alternatives include [LibreOffice](https://www.libreoffice.org/) and [Apache OpenOffice](https://www.openoffice.org/). Make sure to export it as ReadMe.html and put it into `SEDIRECTORY` including any folders the export creates.
-- [Notepad++](https://notepad-plus-plus.org/) for editing `ScoringEngine.sh` script on Windows
+- [Atom](https://atom.io) (cross-platform)
+  - To edit Markdown (`.md`) files:
+    - Use Atom's `gfm-pdf` package to turn render Markdown into HTML (such as the ReadMe). Note: requires [wkhtmltopdf](https://wkhtmltopdf.org/)
+    - If you are using Windows, you will need to configure `gfm-pdf` to look at `"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"` and also to output as an HTML file (as opposed to a PDF)
+- [Notepad++](https://notepad-plus-plus.org/) (Windows only)
+- Microsoft Word (Windows only, price varies) to make and edit the ReadMe. Alternatives include [LibreOffice](https://www.libreoffice.org/) (cross-platform, free, open-source) and [Apache OpenOffice](https://www.openoffice.org/) (cross-platform, free, open-source). Make sure to export it as ReadMe.html and put it into `SEDIRECTORY` including any folders the export creates.
 
 #### Getting the files onto the image
 - [WinSCP](https://winscp.net/eng/index.php) - A graphical SCP for Windows. Easy to use.
-- SCP (native if using Linux OR Bash on Ubuntu on Windows -- the latter requires Windows 10 Anniversary Update)
+- SCP (native if using Linux OR Bash on Ubuntu/Fedora/openSUSE on Windows -- the latter requires Windows 10 Creators Update)
 
 #### Contact
 kedwinchen.public@gmail.com, please put "Linux-ScoringEngine" in the subject line

@@ -1,0 +1,12 @@
+sep=;
+Description;Points
+;
+End of Vulnerabilities
+Number of:
+Vulnerabilities Found;$count;
+Vulnerabilities Scored;$max;
+Points awarded;$points;
+Maximum points;$maxpoints;
+Penalties assessed;$penalties;
+Points deducted;$deduction;
+Final score;$finalscore;

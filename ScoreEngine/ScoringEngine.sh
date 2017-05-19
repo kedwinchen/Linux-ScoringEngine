@@ -2,15 +2,14 @@
 
 ##### CONSTANTS #####
 
-ACCOUNT=sysadmin
-# export SYSTEM="$(cat /proc/version |cut -d '(' -f4 |cut -d ')' -f1 |sed -s 's/[0123456789]/./g' |cut -d '.' -f1 |tr -d ' ')"
-# The above variable is set temporarily in the master_se_functions.sh in the 'set_os' function
-export TIME=$(date "+%r %Z on %F")
-export SEDIRECTORY=/opt/ScoreEngine
-export SEFUNCTIONS=${SEDIRECTORY}/master_se_functions.sh
-export OUTPUT=${SEDIRECTORY}/ScoreReport.html
-export TEAMNAME=$(cat ${SEDIRECTORY}/teamname)
-export TITLE="Linux Practice Round <NUMBER_GOES_HERE>"
+export readonly ACCOUNT=sysadmin
+export readonly TIME=$(date "+%r %Z on %F")
+export readonly SEDIRECTORY=/opt/ScoreEngine
+export readonly SEFUNCTIONS=${SEDIRECTORY}/master_se_functions.sh
+export readonly OUTPUT=${SEDIRECTORY}/ScoreReport.html
+export readonly CSV=${SEDIRECTORY}/data.csv
+export readonly TEAMNAME=$(cat ${SEDIRECTORY}/teamname)
+export readonly TITLE="Linux Practice Round <NUMBER_GOES_HERE>"
 
 ##### GLOBAL Variables #####
 export count=0
@@ -28,7 +27,7 @@ export is_verbose=0
 ## End GLOBAL Variables ##
 
 ##### INTEGRITY FUNCTION #####
-readonly CHECKSUM_SHA512="123806aa17da12265f6ccacb65d2dda43630e2f63d164778bb81e519c93b623b1f7ec0830a650bdb4498388b92535f87534a11cbebbe1a147e8f1537bbf704b7"
+readonly CHECKSUM_SHA512="29a775932f96dcb9307ab3b95582d0d995c56180748fbd6125ac2ddb10ca73bea21ec3540f8f6a227b78f362c815d098906d80a60b1ed93be9126416948cf237"
 
 function check_integrity {
 if [[ $(sha512sum ${SEFUNCTIONS}|cut -d ' ' -f1) = ${CHECKSUM_SHA512} ]]; then
@@ -52,16 +51,34 @@ function initialize {
 check_integrity
 source ${SEFUNCTIONS}
 check_root
+show_license
 set_os
 check_verbose
 
 cat ${SEDIRECTORY}/HEADER.html > ${OUTPUT}
+echo "sep=;" > ${CSV}
+echo "Description;Points" >> ${CSV}
 }
 
 function finalize {
 cat ${SEDIRECTORY}/FOOTER.html >> ${OUTPUT}
 finalize_score
 replace_values
+
+echo "" >> ${CSV}
+echo "End of Vulnerabilities" >> ${CSV}
+echo "Number of:" >> ${CSV}
+echo "Vulnerabilities Found;$count;" >> ${CSV}
+echo "Vulnerabilities Scored;$max;" >> ${CSV}
+echo "Points awarded;$points;" >> ${CSV}
+echo "Maximum points;$maxpoints;" >> ${CSV}
+echo "Penalties assessed;$penalties;" >> ${CSV}
+echo "Points deducted;$deduction;" >> ${CSV}
+echo "Final score;$finalscore;" >> ${CSV}
+
+sleep 3s
+clear
+
 echo "Your score has been updated."
 exit 0
 }

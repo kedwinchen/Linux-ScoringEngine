@@ -5,37 +5,9 @@
 # Copyright (c) 2016-2017 Kedwin Chen
 # All rights reserved.
 # 
-# This license governs use of the accompanying software.
+# The License (LICENSE.txt) governs use of the accompanying software.
 # If you use the software, you accept this license.
 # If you do not accept the license, do not use the software.
-# 
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-# 
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
-# 
-# * Redistributions in binary form must reproduce the above copyright notice,
-#   this list of conditions and the following disclaimer in the documentation
-#   and/or other materials provided with the distribution.
-# 
-# * Neither the name of the copyright holder nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#   
-# * The copyright holder has explicitly granted permission to redistribute the
-#   software in source and/or binary form to a pre-determined entity.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 # FAILURE TO MEET THE REQUIREMENTS OF THIS LICENSE WILL RESULT IN IMMEDIATE 
 # REVOCATION OF THE RIGHTS GRANTED BY THE LICENSE.
@@ -68,7 +40,7 @@ export is_verbose=0
 ## End GLOBAL Variables ##
 
 ##### INTEGRITY FUNCTION #####
-readonly CHECKSUM_SHA512="29a775932f96dcb9307ab3b95582d0d995c56180748fbd6125ac2ddb10ca73bea21ec3540f8f6a227b78f362c815d098906d80a60b1ed93be9126416948cf237"
+readonly CHECKSUM_SHA512="acd6b28cbe53d5f891ad79926544fa28caeaf7818e2a1dbbf7296059580395691a345b77b66c1c5726b612733305ee8089fd18b17366ee6b1e43d20d83a7ca2f"
 
 function check_integrity {
 if [[ $(sha512sum ${SEFUNCTIONS}|cut -d ' ' -f1) = ${CHECKSUM_SHA512} ]]; then

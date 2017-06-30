@@ -73,7 +73,12 @@ This section is for if you want to protect/hide the contents of the `ScoringEngi
     ```
 
     Save the file. Then run `# chmod 755 /usr/local/bin/score`. If you have coded everything right, then your competitors should be able to update their score using `sudo score` in the terminal without password. ***This step is necessary if you want to use the `.desktop` files (in Resources folder).***
-9. Make the critical files immutable. This prevents them from being deleted.
+9. Make the score update automatically, every minute.
+ To do so, add a line to /etc/crontab
+ ```bash
+ * * * * * /usr/local/bin/score
+ ```
+10. Make the critical files immutable. This prevents them from being deleted or modified.
  To do so, please use the following command:
  ```bash
  # chattr +i <filename>

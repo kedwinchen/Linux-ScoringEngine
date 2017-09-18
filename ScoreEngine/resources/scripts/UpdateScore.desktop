@@ -2,4 +2,4 @@
 Name=Update Score
 Type=Application
 Exec=sudo score
-Icon=/opt/ScoreEngine/tux.png
+Icon=/opt/ScoreEngine/resources/media/tux.png

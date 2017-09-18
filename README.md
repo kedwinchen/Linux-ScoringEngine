@@ -5,12 +5,18 @@ When creating a round, please copy all of the files in the 'ScoreEngine' folder 
 
 ### Dependencies
 These can be installed through your package manager (e.g. `apt-get`, `yum`)
+- GNOME Desktop Environment is MANDATORY if you want to have the banner at the top of the screen
 - `sox`, `libsox-fmt-all`
 - `notify-osd` (if on Debian-based system)
-- `libnotify` (if on RedHat-based system)
+- `libnotify` (if on Red Hat-based system)
 - `dos2unix` (for converting script if written on Windows)
 - `shc` (generic shell compiler)
     - [You can download shc from its GitHub page if your package manager cannot find it](https://github.com/neurobin/shc)
+
+### Setting up the image
+1. First, clone the repository
+2. Copy the entire ScoreEngine folder to `/opt/`
+3. Inside `/opt/ScoreEngine/resources/scripts/`, there should be a script called `img_setup.sh`, which should be run with root privileges. This script, if successful, should set up the environment needed to develop the script.
 
 ### The `master_se_functions.sh` file
 When writing your code, sourcing `master_se_functions.sh` will (hopefully) make the image creation easier.
@@ -42,14 +48,15 @@ This section is for if you want to protect/hide the contents of the `ScoringEngi
     ```
 5. Remove the following files if they exist in tge directory where your Scoring Engine is stored (***only do this if you are ABSOLUTELY sure that you a) are satisfied with your code or b) have a backup to edit in case something goes wrong, I recommend keeping these files until you are done testing your script***)
     - `ScoringEngine.sh`
-    - `ScoringEngine.sh~` (this is a backup created by your system)
-    - `ScoringEngine.sh.x` (you can ignore this if you use the `-U` option, for Untraceable.)
-6. Keeping the `ScoringEngine.sh.x.c` file will allow the Scoring Engine to be recompiled in the event that it is either corrupted or deleted.
+    - `ScoringEngine.sh~` (this is a backup created by your system if you use an editor like `gedit`)
+    - `.ScoringEngine.sh.swp` (this is a backup created by your system if you use an editor like `vi` or `vim`)
+    - `ScoringEngine.sh.x`
+6. Keep the `ScoringEngine.sh.x.c` file to allow the Scoring Engine to be recompiled (in case of corruption or deletion).
 7. Make a file in `/usr/local/bin/` called `score` with the following contents:
 
     ```bash
     #!/bin/bash
-    if [[ $USER != "root" ]]; then
+    if [[ $EUID -ne 0 ]]; then
        echo "You must be root to run this script!"
        exit 1
     fi
@@ -92,35 +99,33 @@ This section is for if you want to protect/hide the contents of the `ScoringEngi
  ```
 
 ### The `.desktop` files
-These files are found in the "resources" folder. (See the exampleSE)
+The setup should have been handled by `img_setup.sh`. If not, follow the manual steps below
 #### Usage
 1. The files are to be placed on the Desktop folder of the user specified in the `ACCOUNT` variable in the `ScoringEngine.sh` (the same place you would put Forensics Questions).
-    - Note: you might need to allow desktop icons. Configure this using the tweak tool for your disaplay manager.
+    - Note: you might need to allow desktop icons. Configure this using the tweak tool for your display manager.
 2. Make sure the `.desktop` file points to the correct place (the `SEDIRECTORY`)
-    - You'll need to create a ReadMe in the `SEDIRECTORY` to use CyberPatriotReadme.desktop (below, pay attention to the `SEDIRECTORY`)
+    - You'll need to create a ReadMe in the `SEDIRECTORY` to use Readme.desktop (below, pay attention to the `SEDIRECTORY`)
     ```
     [Desktop Entry]
     Name=README
     Type=Application
     Exec=x-www-browser "file:///opt/ScoreEngine/ReadMe.html"
-    Icon=/opt/ScoreEngine/tux.png
+    Icon=/opt/ScoreEngine/resources/media/tux.png
     StartupNotify=true
     ```
 3. Change the properties of the file (right click on the `.desktop file`, "Properties" on the context menu) so that it is allowed to execute as a program (might be under "Permissions" tab).
 4. Double click on it to make sure it works. You might need to mark it as "trusted" (the system should give you a prompt).
 
 ### Miscellaneous
-#### Editors
-- [Atom](https://atom.io) (cross-platform)
+#### Editor
+- [Atom](https://atom.io)
   - To edit Markdown (`.md`) files:
     - Use Atom's `gfm-pdf` package to turn render Markdown into HTML (such as the ReadMe). Note: requires [wkhtmltopdf](https://wkhtmltopdf.org/)
-    - If you are using Windows, you will need to configure `gfm-pdf` to look at `"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"` and also to output as an HTML file (as opposed to a PDF)
-- [Notepad++](https://notepad-plus-plus.org/) (Windows only)
-- Microsoft Word (Windows only, price varies) to make and edit the ReadMe. Alternatives include [LibreOffice](https://www.libreoffice.org/) (cross-platform, free, open-source) and [Apache OpenOffice](https://www.openoffice.org/) (cross-platform, free, open-source). Make sure to export it as ReadMe.html and put it into `SEDIRECTORY` including any folders the export creates.
+    - If you are using Windows, you will need to configure `gfm-pdf` to look at `"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"`
+    - You may also need to configure `gfm-pdf` settings to output as an HTML file (as opposed to a PDF)
 
 #### Getting the files onto the image
-- [WinSCP](https://winscp.net/eng/index.php) - A graphical SCP for Windows. Easy to use.
-- SCP (native if using Linux OR Bash on Ubuntu/Fedora/openSUSE on Windows -- the latter requires Windows 10 Creators Update)
+- [WinSCP](https://winscp.net/eng/index.php) or SCP (Windows/*nix, respectively)
 
 #### Contact
 kedwinchen.public@gmail.com, please put "Linux-ScoringEngine" in the subject line

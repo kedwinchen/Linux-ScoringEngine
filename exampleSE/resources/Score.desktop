@@ -1,5 +1,0 @@
-[Desktop Entry]
-Name=Update Score
-Type=Application
-Exec=sudo score
-Icon=/opt/ScoreEngine/tux.png

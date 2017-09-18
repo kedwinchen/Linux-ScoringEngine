@@ -21,6 +21,13 @@ modification, are permitted provided that the following conditions are met:
   contributors may be used to endorse or promote products derived from
   this software without specific prior written permission.
   
+* The origin of this software must not be misrepresented; you must not
+  claim that you wrote the original software. If you use this software
+  in a product, an acknowledgment in the product documentation is required.
+  
+* Altered source versions must be plainly marked as such, and must not be
+  misrepresented as being the original software.
+  
 * The copyright holder has explicitly granted permission to redistribute the
   software in source and/or binary form to a pre-determined entity.
 

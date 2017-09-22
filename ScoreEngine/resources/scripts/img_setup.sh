@@ -8,7 +8,7 @@ if ! in_dev ; then
   exit 1
 fi
 
-${PKGINSTALL} sox libsox-fmt-all notify-osd dos2unix curl git automake
+${PKGINSTALL} sox libsox-fmt-all notify-osd dos2unix curl git automake python-gtk2
 
 cd /tmp/
 git clone https://github.com/neurobin/shc.git

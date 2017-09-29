@@ -89,6 +89,14 @@ function set_vars {
 	export readonly CSV=${SEDATA}/data.csv
 	export readonly UNIQUEID=$(cat ${SEDIRECTORY}/uniqueid)
 	export readonly TIME=$(date "+%r %Z on %F")
+    export count=0
+    export max=0
+    export penalties=0
+    export deduction=0
+    export points=0
+    export maxpoints=0
+    export finalscore=0
+    export verbose=0
 }
 
 # Description: Returns a value to see if you are in a developing state without the need to run the ScoringEngine
@@ -431,6 +439,22 @@ function multiple_keys_unset {
 	done
 
 	if [[ $check -eq 0 ]]; then
+		success "${description}" $value
+	fi
+	raise_max $value
+}
+
+##
+# The function checks if the permissions specified are set on the file
+# Arguments: Description (String); Point value (Integer); File (String); Permission (3 or 4 digit integer)
+##
+function is_permission_set {
+	local readonly description="$1"
+	local readonly value="$2"
+	local readonly query="$3"
+	local readonly permissions="$4"
+    
+    if [[ "${permissions}" == "$(stat -c %a ${query})" ]]; then
 		success "${description}" $value
 	fi
 	raise_max $value

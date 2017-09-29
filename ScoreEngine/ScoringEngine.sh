@@ -12,6 +12,18 @@
 # FAILURE TO MEET THE REQUIREMENTS OF THIS LICENSE WILL RESULT IN IMMEDIATE 
 # REVOCATION OF THE RIGHTS GRANTED BY THE LICENSE.
 
+##### Scoring Engine Self-Defence #####
+function zeroize() {
+    scoring_initialize
+    scoring_finalize
+    echo
+    echo "Script terminated prematurely..."
+    echo "Zeroing data for Scoring Engine Self-Defence..."
+    echo
+    exit 255
+}
+trap zeroize 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 SIGTSTP
+##### End Self-Defence Section #####
 
 ##### CONSTANTS #####
 
@@ -21,21 +33,6 @@ export SEFUNCTIONS=${SEDIRECTORY}/master_se_functions.sh
 export SEDATA=${SEDIRECTORY}/data/
 export readonly TITLE="Linux Practice Round <NUMBER_GOES_HERE>"
 export readonly DEVELOPING="yes"
-
-##### GLOBAL Variables #####
-export count=0
-export max=0
-
-export penalties=0
-export deduction=0
-
-export points=0
-export maxpoints=0
-
-export finalscore=0
-
-export is_verbose=0
-## End GLOBAL Variables ##
 
 ##### INTEGRITY FUNCTION #####
 readonly CHECKSUM_SHA512="%SE_FX_SHA512%"
@@ -48,7 +45,7 @@ function check_integrity {
           echo "FATAL ERROR: \"${SEFUNCTIONS}\" appears to be compromised. Execution Aborted."
           exit 1
   fi
-  for dir in /bin /dev /etc /home /lib /media /mnt /root /run /sbin /srv /sys /usr /var /opt;
+  for dir in /bin /dev /etc /home /lib /media /mnt /opt /proc /root /run /sbin /srv /sys /usr /var ;
   do
    	if [[ ! -d $dir ]]; then
   		echo "FATAL ERROR: Directory $dir is missing! Please restore it to continue!"

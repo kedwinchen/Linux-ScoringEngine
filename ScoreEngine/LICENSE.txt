@@ -3,35 +3,44 @@ LICENSE FOR LINUX-SCORINGENGINE
 Copyright (c) 2016-2017 Kedwin Chen
 All rights reserved.
 
-This license governs use of the accompanying software.
-If you use the software, you accept this license.
-If you do not accept the license, do not use the software.
+This license governs use of the accompanying Software.
+If you use the Software, you accept this license and agree to be bound by the 
+terms of this license as the "User".
+If you do not accept the license, do not use the Software.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
 * Redistributions of source code must retain the above copyright notice, this
-  list of conditions and the following disclaimer.
+  list of conditions in its entirety and the following disclaimer.
 
 * Redistributions in binary form must reproduce the above copyright notice,
-  this list of conditions and the following disclaimer in the documentation
-  and/or other materials provided with the distribution.
+  this list of conditions in its entirety and the following disclaimer in the 
+  documentation and/or other materials provided with the distribution.
+
+* Users of the Software are strictly forbidden from performing
+  any form of reverse-engineering on the redistributed binary
 
 * Neither the name of the copyright holder nor the names of its
   contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
+  this Software without specific prior written permission.
   
-* The origin of this software must not be misrepresented; you must not
-  claim that you wrote the original software. If you use this software
+* The origin of this Software must not be misrepresented; you must not
+  claim that you wrote the original Software. If you use this Software
   in a product, an acknowledgment in the product documentation is required.
   
 * Altered source versions must be plainly marked as such, and must not be
-  misrepresented as being the original software.
+  misrepresented as being the original Software.
   
 * The copyright holder has explicitly granted permission to redistribute the
-  software in source and/or binary form to a pre-determined entity.
+  Software in source and/or binary form to a pre-determined entity.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+THE COPYRIGHT HOLDER HAS THE SOLE EXCLUSIVE RIGHT TO UPDATE THIS LICENSE AT ANY
+TIME FOR ANY REASON WITHOUT PRIOR NOTICE TO THE USER, AND THE USER SHALL BE 
+BOUND BY THE TERMS OF THE UPDATED LICENSE WHICH MAY BE FOUND IN THE REPOSITORY 
+OWNED BY THE COPYRIGHT HOLDER WHERE THE SOURCE CODE FOR SOFTWARE RESIDES.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE

@@ -6,6 +6,8 @@ When creating a round, please copy all of the files in the 'ScoreEngine' folder 
 ### Dependencies
 These can be installed through your package manager (e.g. `apt-get`, `yum`)
 - GNOME Desktop Environment is MANDATORY if you want to have the banner at the top of the screen
+    - The package is usually something like `gdm` or `gnome-desktop`, check with your distribution
+    - Other dependencies for the banner include `python2` and `pygtk` (Python2 must be able to `import os,pygtk,gtk` successfully)
 - `sox`, `libsox-fmt-all`
 - `notify-osd` (if on Debian-based system)
 - `libnotify` (if on Red Hat-based system)
@@ -105,14 +107,14 @@ The setup should have been handled by `img_setup.sh`. If not, follow the manual 
     - Note: you might need to allow desktop icons. Configure this using the tweak tool for your display manager.
 2. Make sure the `.desktop` file points to the correct place (the `SEDIRECTORY`)
     - You'll need to create a ReadMe in the `SEDIRECTORY` to use Readme.desktop (below, pay attention to the `SEDIRECTORY`)
-    ```
-    [Desktop Entry]
-    Name=README
-    Type=Application
-    Exec=x-www-browser "file:///opt/ScoreEngine/ReadMe.html"
-    Icon=/opt/ScoreEngine/resources/media/tux.png
-    StartupNotify=true
-    ```
+```
+[Desktop Entry]
+Name=README
+Type=Application
+Exec=x-www-browser "file:///opt/ScoreEngine/ReadMe.html"
+Icon=/opt/ScoreEngine/resources/media/tux.png
+StartupNotify=true
+```
 3. Change the properties of the file (right click on the `.desktop file`, "Properties" on the context menu) so that it is allowed to execute as a program (might be under "Permissions" tab).
 4. Double click on it to make sure it works. You might need to mark it as "trusted" (the system should give you a prompt).
 

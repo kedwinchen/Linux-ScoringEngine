@@ -5,11 +5,15 @@ All rights reserved.
 
 This license governs use of the accompanying Software.
 If you use the Software, you accept this license and agree to be bound by the 
-terms of this license as the "User".
-If you do not accept the license, do not use the Software.
+terms of this license.
+If you do not accept the license, you are expressly forbidden from using the
+Software.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
+
+* The Software may not be redistributed in any form by any means for
+  commercial gains
 
 * Redistributions of source code must retain the above copyright notice, this
   list of conditions in its entirety and the following disclaimer.
@@ -31,6 +35,10 @@ modification, are permitted provided that the following conditions are met:
   
 * Altered source versions must be plainly marked as such, and must not be
   misrepresented as being the original Software.
+
+* Improvements to the original Software should be shared with the copyright
+  holder for the benefit of others that may rely on the Software. Exceptions
+  shall be made for modifications that are considered 'trade secrets'
   
 * The copyright holder has explicitly granted permission to redistribute the
   Software in source and/or binary form to a pre-determined entity.
@@ -38,7 +46,7 @@ modification, are permitted provided that the following conditions are met:
 THE COPYRIGHT HOLDER HAS THE SOLE EXCLUSIVE RIGHT TO UPDATE THIS LICENSE AT ANY
 TIME FOR ANY REASON WITHOUT PRIOR NOTICE TO THE USER, AND THE USER SHALL BE 
 BOUND BY THE TERMS OF THE UPDATED LICENSE WHICH MAY BE FOUND IN THE REPOSITORY 
-OWNED BY THE COPYRIGHT HOLDER WHERE THE SOURCE CODE FOR SOFTWARE RESIDES.
+OWNED BY THE COPYRIGHT HOLDER WHERE THE SOURCE CODE FOR THE SOFTWARE RESIDES.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE

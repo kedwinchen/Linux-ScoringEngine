@@ -38,6 +38,7 @@ This section is for if you want to protect/hide the contents of the `ScoringEngi
 0. `dos2unix` all of the `.sh` files you modified (e.g., `master_se_functions.sh` ; `ScoringEngine.sh`)
     - You MUST do this if you wrote the script on Windows and did not convert to Unix format (do this if you are unsure of what this means)
 1. Download and install the `shc` package
+1. Run the `img_finalize.sh` script in the `/opt/ScoreEngine/resources` folder (this will update values such as the `sha512` checksum in the `ScoringEngine.sh` file)
 2. Compile the `ScoringEngine.sh` file using `shc -Urf ScoringEngine.sh` (NOTE: The -U option may not always be available). You can also use other options the `shc` command offers
 3. This will generate two files: `ScoringEngine.sh.x`, and `ScoringEngine.sh.x.c`. If you did not use the `-U` option, remove the `ScoringEngine.sh.x` file, as its code execution can be caught/traced more simply than if you compiled the `ScoringEngine.sh.x.c`
     - The `ScoringEngine.sh.x` file is an executable binary of the script
@@ -48,7 +49,7 @@ This section is for if you want to protect/hide the contents of the `ScoringEngi
     ```
     # gcc /opt/ScoreEngine/ScoringEngine.sh.x.c -o /opt/ScoreEngine/ScoringEngine
     ```
-5. Remove the following files if they exist in tge directory where your Scoring Engine is stored (***only do this if you are ABSOLUTELY sure that you a) are satisfied with your code or b) have a backup to edit in case something goes wrong, I recommend keeping these files until you are done testing your script***)
+5. Remove the following files if they exist in the directory where your Scoring Engine is stored (***only do this if you are ABSOLUTELY sure that you a) are satisfied with your code or b) have a backup to edit in case something goes wrong, I recommend keeping these files until you are done testing your script***)
     - `ScoringEngine.sh`
     - `ScoringEngine.sh~` (this is a backup created by your system if you use an editor like `gedit`)
     - `.ScoringEngine.sh.swp` (this is a backup created by your system if you use an editor like `vi` or `vim`)

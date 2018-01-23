@@ -1,15 +1,15 @@
 #!/bin/bash
 
 # LICENSE FOR LINUX-SCORINGENGINE
-# 
+#
 # Copyright (c) 2016-2017 Kedwin Chen
 # All rights reserved.
-# 
+#
 # The License (LICENSE.txt) governs use of the accompanying software.
 # If you use the software, you accept this license.
 # If you do not accept the license, do not use the software.
-# 
-# FAILURE TO MEET THE REQUIREMENTS OF THIS LICENSE WILL RESULT IN IMMEDIATE 
+#
+# FAILURE TO MEET THE REQUIREMENTS OF THIS LICENSE WILL RESULT IN IMMEDIATE
 # REVOCATION OF THE RIGHTS GRANTED BY THE LICENSE.
 
 ##### Scoring Engine Self-Defence #####
@@ -38,20 +38,19 @@ export readonly DEVELOPING="yes"
 readonly CHECKSUM_SHA512="%SE_FX_SHA512%"
 
 function check_integrity {
-  if [[ $(sha512sum ${SEFUNCTIONS}|cut -d ' ' -f1) = ${CHECKSUM_SHA512} ]]; then
-          echo "PASS: The integrity of \"${SEFUNCTIONS}\" has not been compromised."
-          return 0
-  else
-          echo "FATAL ERROR: \"${SEFUNCTIONS}\" appears to be compromised. Execution Aborted."
-          exit 1
-  fi
-  for dir in /bin /dev /etc /home /lib /media /mnt /opt /proc /root /run /sbin /srv /sys /usr /var ;
-  do
-   	if [[ ! -d $dir ]]; then
-  		echo "FATAL ERROR: Directory $dir is missing! Please restore it to continue!"
-  		exit 1
-  	fi
-  done
+    if [[ $(sha512sum ${SEFUNCTIONS}|cut -d ' ' -f1) = ${CHECKSUM_SHA512} ]]; then
+        echo "PASS: The integrity of \"${SEFUNCTIONS}\" has not been compromised."
+        return 0
+    else
+        echo "FATAL ERROR: \"${SEFUNCTIONS}\" appears to be compromised. Execution Aborted."
+        exit 1
+    fi
+    for dir in /bin /dev /etc /home /lib /media /mnt /opt /proc /root /run /sbin /srv /sys /usr /var ; do
+        if [[ ! -d $dir ]]; then
+            echo "FATAL ERROR: Directory $dir is missing! Please restore it to continue!"
+            exit 1
+        fi
+    done
 }
 ##### END INTEGRITY FUNCTION #####
 
@@ -59,67 +58,65 @@ function check_integrity {
 
 function check_params {
 #  while getopts "vqh" OPTION ; do
-  getopts "vqh" OPTION 
-    case ${OPTION} in
-      h)
-        echo "Help"
-        ;;
-      v)
-        verbose=1
-        ;;
-      q)
-        quiet=1
-        ;;
-      \?)
-        echo "Help"
-        echo "${OPTION} was not understood"
-        exit 2
-        ;;
-    esac
+    getopts "vqh" OPTION
+        case ${OPTION} in
+            h)
+                echo "Help"
+                ;;
+            v)
+                verbose=1
+                ;;
+            q)
+                quiet=1
+                ;;
+            \?)
+                echo "Help"
+                echo "${OPTION} was not understood"
+                exit 2
+                ;;
+        esac
 # done
 }
 
 function scoring_initialize {
-  check_integrity
-  source ${SEFUNCTIONS}
-  set_vars
-  calculate_time
-  show_license
-  check_params
+    check_integrity
+    source ${SEFUNCTIONS}
+    set_vars
+    calculate_time
+    show_license
+    check_params
 
-  cat ${SERESOURCES}/report/HEADER.html > ${REPORT}
+    cat ${SERESOURCES}/report/HEADER.html > ${REPORT}
 
-  cat <<- _EOF_ > ${CSV}
-  sep=;
-  Description;Points
-  _EOF_
+    cat <<- _EOF_ > ${CSV}
+		sep=;
+		Description;Points
+	_EOF_
 }
 
 function scoring_finalize {
-  cat ${SERESOURCES}/report/FOOTER.html >> ${REPORT}
-  finalize_score
-  replace_values
+    cat ${SERESOURCES}/report/FOOTER.html >> ${REPORT}
+    finalize_score
+    replace_values
 
-  cat <<- _EOF_ >> ${CSV}
+    cat <<- _EOF_ >> ${CSV}
+		End of Vulnerabilities
+	    Number of:
+		Vulnerabilities Found;$count;
+		Vulnerabilities Scored;$max;
+		Points awarded;$points;
+		Maximum points;$maxpoints;
+		Penalties assessed;$penalties;
+		Points deducted;$deduction;
+		Final score;$finalscore;
+	_EOF_
 
-  End of Vulnerabilities
-  Number of:
-  Vulnerabilities Found;$count;
-  Vulnerabilities Scored;$max;
-  Points awarded;$points;
-  Maximum points;$maxpoints;
-  Penalties assessed;$penalties;
-  Points deducted;$deduction;
-  Final score;$finalscore;
-
-  _EOF_
-
-  sleep 3s
-  clear
-  rm -f ${SEDATA}/ScoreReport.html
-  cp ${SEDIRECTORY}/ScoreReport.html ${SEDATA}/
-  echo "Your score has been updated."
-  exit 0
+    sleep 3s
+    clear
+    rm -f ${SEDATA}/ScoreReport.html
+    cp ${SEDIRECTORY}/ScoreReport.html ${SEDATA}/
+    echo "Your score has been updated."
+    exit 0
 }
 ## End Custom Functions ##
 

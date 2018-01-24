@@ -13,7 +13,27 @@
 # FAILURE TO MEET THE REQUIREMENTS OF THIS LICENSE WILL RESULT IN IMMEDIATE
 # REVOCATION OF THE RIGHTS GRANTED BY THE LICENSE.
 function show_license {
-    cat ${SEDIRECTORY}/LICENSE.txt
+    # cat ${SEDIRECTORY}/LICENSE.txt
+    echo "    LINUX SCORING ENGINE
+    Copyright (C) 2016-2018 KEDWIN CHEN
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    151 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+    The license in ${SEDIRECTORY}/LICENSE.txt governs use of the accompanying software.
+    If you use the software, you accept the license.
+    If you do not accept the license, do not use the software."
 }
 
 ##### CONSTANT FUNCTIONS  #####
@@ -29,7 +49,7 @@ function check_root {
 
 # Description: Get the architecture of the system (i.e., 32 or 64)
 function get_arch {
-        getconf LONG_BIT
+        getconf LONG_BIT &> /dev/null
         if [[ $? -ne 0 ]] ; then
             echo "FATAL ERROR: Could not determine the architecture of the OS"
             exit 1
@@ -41,10 +61,22 @@ function get_arch {
 # Description: Checks the operating system.
 function set_os {
     get_arch
-    export readonly SYSTEM="$(cat /proc/version |cut -d '(' -f4 |cut -d ')' -f1 |sed -s 's/[0123456789]/./g' |cut -d '.' -f1 |tr -d ' ' | cut -d '/' -f1 |tr '[:upper:]' '[:lower:]')"
 
-    case $SYSTEM in
-    "redhat")
+    if [[ -f /etc/os-release ]]; then
+        OS_INFO="/etc/os-release"
+    else
+        if [[ -f /usr/lib/os-release ]]; then
+            OS_INFO="/usr/lib/os-release"
+        fi
+    fi
+    export readonly SYSTEM=$(grep -i "ID_LIKE" ${OS_INFO} | cut -d '=' -f 2 | sed -s 's/[01234567890"-.]//g' )
+
+    if [[ 'fail' == ${SYSTEM}'fail' ]]; then
+        export readonly SYSTEM="$(cat /proc/version |cut -d '(' -f4 |cut -d ')' -f1 |sed -s 's/[0123456789]/./g' |cut -d '.' -f1 |tr -d ' ' | cut -d '/' -f1 |tr '[:upper:]' '[:lower:]')"
+    fi
+
+    case ${SYSTEM} in
+    "redhat"|"fedora"|"suse")
         export readonly OS_TYPE="redhat"
         export PKGQUERY="rpm -q "
         export PKG="yum "
@@ -65,14 +97,18 @@ function set_os {
     *)
         echo "FATAL ERROR: Could not determine the operating system type. This is due to one of the following: "
         echo "1. The SYSTEM variable (current value ${SYSTEM}) (in ${SEDIRECTORY}/master_se_functions.sh) is not set correctly."
-        echo "2. Operating system not supported or recognized. The system uses /proc/version to determine the OS_TYPE"
+        echo "2. Operating system not supported or recognized. The system uses the following files in the order listed to determine the OS_TYPE:"
+        echo "    /etc/os-release (via ID_LIKE)"
+        echo "    /usr/lib/os-release (via ID_LIKE)"
+        echo "    /proc/version"
         echo "-----"
         echo "Execution aborted"
+        sleep 3s
         exit 1
         ;;
     esac
 
-    export readonly PKGINSTALL="${PKG} install -y "
+    # export readonly PKGINSTALL="${PKG} install -y "
     return 0
 }
 

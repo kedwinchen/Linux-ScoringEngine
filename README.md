@@ -1,10 +1,10 @@
 # Linux Scoring Engine
 
 ### Objective
-The Linux Scoring Engine (hereafter: the "Software") was created and is distributed to be a framework to more easily score how secure a Linux-based operating system (such as GNU/Linux distributions) is based on a set of user-defined vulnerabilities or other issues.
+The Linux Scoring Engine (hereafter: the "Software") was created and is distributed to be a framework to more easily score how secure a UNIX-like operating systems (such as GNU/Linux distributions) is based on a set of user-defined vulnerabilities or other issues.
 
 ### Usage
-The Software was implemented using the Bash scripting language for use on [most] Linux-based operating systems.  
+The Software was implemented using the Bash scripting language for use on [most] UNIX-like operating systems.  
 Using the modules/pre-made functions in the `master_se_functions.sh` file, the user can define the condition for a successful patch/fix of a vulnerability in `ScoringEngine.sh`.  
 The `ScoringEngine.sh` script, when run, should test the system according to the user-defined rules.   
 This software is recommended to be deployed in a virtual environment. There is no optimization for deployment on physical or virtual hardware.  
